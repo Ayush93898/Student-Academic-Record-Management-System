@@ -16,10 +16,10 @@ def main():
     print("\nInitializing database connection...")
     
     db_config = DatabaseConfig(
-        host='mysql-22a41d18-aa2117354-94d2.h.aivencloud.com',
-        user='avnadmin',
-        password='AVNS_rPMKL2-ElED3ldsTgsq',
-        database='defaultdb'
+        host='localhost',
+        user='root',
+        password='password',
+        database='student_management'
     )
     
     print("Checking database connection...")

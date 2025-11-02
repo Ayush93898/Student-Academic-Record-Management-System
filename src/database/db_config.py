@@ -2,13 +2,20 @@ import mysql.connector
 from mysql.connector import Error
 
 class DatabaseConfig:
-    def __init__(self, host='mysql-22a41d18-aa2117354-94d2.h.aivencloud.com', user='avnadmin', password='AVNS_rPMKL2-ElED3ldsTgsq', database='defaultdb'):
+    def __init__(
+        self,
+        host='localhost',
+        user='root',
+        password='password',  # 🔹 change this to your actual MySQL Workbench password
+        database='student_management'         # 🔹 the database you created in Workbench
+    ):
         self.host = host
         self.user = user
         self.password = password
         self.database = database
         self.connection = None
-    
+
+    # 🔹 Connect to the MySQL database
     def connect(self):
         try:
             self.connection = mysql.connector.connect(
@@ -18,18 +25,25 @@ class DatabaseConfig:
                 database=self.database
             )
             if self.connection.is_connected():
+                print("Connected to MySQL successfully!")
                 return self.connection
         except Error as e:
-            print(f"Error connecting to MySQL: {e}")
+            print(f" Error connecting to MySQL: {e}")
             return None
-    
+
+    # 🔹 Disconnect from database
     def disconnect(self):
         if self.connection and self.connection.is_connected():
             self.connection.close()
-    
+            print("MySQL connection closed.")
+
+    # 🔹 Execute insert/update/delete query
     def execute_query(self, query, params=None):
+        if not self.connection or not self.connection.is_connected():
+            print("No active MySQL connection. Run connect() first.")
+            return None
+
         cursor = None
-        last_id = None
         try:
             cursor = self.connection.cursor()
             if params:
@@ -37,16 +51,20 @@ class DatabaseConfig:
             else:
                 cursor.execute(query)
             self.connection.commit()
-            last_id = cursor.lastrowid
-            return last_id
+            return cursor.lastrowid
         except Error as e:
-            print(f"Error executing query: {e}")
+            print(f" Error executing query: {e}")
             return None
         finally:
             if cursor:
                 cursor.close()
-    
+
+    # 🔹 Fetch multiple rows
     def fetch_all(self, query, params=None):
+        if not self.connection or not self.connection.is_connected():
+            print("No active MySQL connection. Run connect() first.")
+            return []
+        
         cursor = None
         try:
             cursor = self.connection.cursor(dictionary=True)
@@ -54,16 +72,20 @@ class DatabaseConfig:
                 cursor.execute(query, params)
             else:
                 cursor.execute(query)
-            result = cursor.fetchall()
-            return result
+            return cursor.fetchall()
         except Error as e:
             print(f"Error fetching data: {e}")
             return []
         finally:
             if cursor:
                 cursor.close()
-    
+
+    # 🔹 Fetch single row
     def fetch_one(self, query, params=None):
+        if not self.connection or not self.connection.is_connected():
+            print("No active MySQL connection. Run connect() first.")
+            return None
+        
         cursor = None
         try:
             cursor = self.connection.cursor(dictionary=True)
@@ -71,15 +93,15 @@ class DatabaseConfig:
                 cursor.execute(query, params)
             else:
                 cursor.execute(query)
-            result = cursor.fetchone()
-            return result
+            return cursor.fetchone()
         except Error as e:
             print(f"Error fetching data: {e}")
             return None
         finally:
             if cursor:
                 cursor.close()
-    
+
+    # 🔹 Initialize database structure from SQL file
     def initialize_database(self):
         try:
             init_connection = mysql.connector.connect(
@@ -88,19 +110,19 @@ class DatabaseConfig:
                 password=self.password
             )
             cursor = init_connection.cursor()
-            
+
             with open('src/database/db_init.sql', 'r') as f:
                 sql_script = f.read()
-            
+
             for statement in sql_script.split(';'):
                 if statement.strip():
                     cursor.execute(statement)
-            
+
             init_connection.commit()
             cursor.close()
             init_connection.close()
-            print("Database initialized successfully!")
+            print(" Database initialized successfully!")
             return True
         except Error as e:
-            print(f"Error initializing database: {e}")
+            print(f" Error initializing database: {e}")
             return False

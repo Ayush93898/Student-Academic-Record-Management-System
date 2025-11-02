@@ -1,4 +1,5 @@
--- Student Academic Record Management System Database Schema
+-- Active: 1762077113688@@127.0.0.1@3306@student_management
+
 
 CREATE DATABASE IF NOT EXISTS student_management;
 USE student_management;
