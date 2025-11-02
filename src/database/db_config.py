@@ -2,7 +2,7 @@ import mysql.connector
 from mysql.connector import Error
 
 class DatabaseConfig:
-    def __init__(self, host='localhost', user='root', password='', database='student_management'):
+    def __init__(self, host='mysql-22a41d18-aa2117354-94d2.h.aivencloud.com', user='avnadmin', password='AVNS_rPMKL2-ElED3ldsTgsq', database='defaultdb'):
         self.host = host
         self.user = user
         self.password = password
